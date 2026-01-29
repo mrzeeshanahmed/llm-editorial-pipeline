@@ -29,22 +29,32 @@ The pipeline decouples reasoning (LLM) from formatting (Application Layer) to ma
 ---
 ## 🚀 Key Engineering Features
 1. Custom LoRA Fine-Tuning (Memory Optimized)
-Constraint: Training on a consumer GPU (RTX 3050 Ti, 4GB VRAM).
-Solution: Utilized Unsloth for memory-efficient backpropagation and LoRA (Low-Rank Adaptation) with r=8, alpha=16.
-Outcome: Successfully fine-tuned a 1.1B parameter model with a batch size of 1 (simulated batch size 8 via gradient accumulation) without OOM errors.
 
-2. Synthetic Data Augmentation (SDV Principles)
-Problem: The original dataset (525 rows) was heavily biased towards "Neutral" political articles, leading to poor recall on "Biased" content.
-Solution: Implemented a programmatic data synthesis strategy inspired by Synthetic Data Vault (SDV).
-Oversampling: Statistically boosted under-represented classes (e.g., Category=Education, Bias=True) by 4x.
-Result: Balanced dataset of 1,021 rows, significantly improving the model's F1-score on rare edge cases.
+   * Constraint: Training on a consumer GPU (RTX 3050 Ti, 4GB VRAM).
 
-3. "Headless" Schema-Agnostic Inference
-Innovation: Traditional LLMs waste ~40% of tokens generating JSON syntax ({ "key": "value" }).
-Strategy: The model was trained to output a compressed ordered text stream separated by delimiters (|||).
-Standard: {"sentiment": 5, "bias": true} (12 tokens)
-Headless: 5 ||| True (3 tokens)
-Benefit: Reduced inference latency by ~35% on CPU and decoupled the database schema from the model weights.
+   * Solution: Utilized Unsloth for memory-efficient backpropagation and LoRA (Low-Rank Adaptation) with r=8, alpha=16.
+
+   * Outcome: Successfully fine-tuned a 1.1B parameter model with a batch size of 1 (simulated batch size 8 via gradient accumulation) without OOM errors.
+
+3. Synthetic Data Augmentation (SDV Principles)
+
+   * Problem: The original dataset (525 rows) was heavily biased towards "Neutral" political articles, leading to poor recall on "Biased" content.
+
+   * Solution: Implemented a programmatic data synthesis strategy inspired by Synthetic Data Vault (SDV).
+
+   * Oversampling: Statistically boosted under-represented classes (e.g., Category=Education, Bias=True) by 4x.
+
+   * Result: Balanced dataset of 1,021 rows, significantly improving the model's F1-score on rare edge cases.
+
+5. "Headless" Schema-Agnostic Inference
+
+   * Innovation: Traditional LLMs waste ~40% of tokens generating JSON syntax ({ "key": "value" }).
+
+   * Strategy: The model was trained to output a compressed ordered text stream separated by delimiters (|||).
+
+   * Standard: {"sentiment": 5, "bias": true} (12 tokens) Headless: 5 ||| True (3 tokens)
+
+   * Benefit: Reduced inference latency by ~35% on CPU and decoupled the database schema from the model weights.
 ---
 ## 📂 Repository Structure
 
@@ -66,7 +76,7 @@ Benefit: Reduced inference latency by ~35% on CPU and decoupled the database sch
 ## 🛠️ Reproduction Steps
 
 
-  ##### Phase 1: Data Engineering
+  ### Phase 1: Data Engineering
 Generate the balanced training dataset from raw CSV exports. (Find in HF)
 
 ```bash
@@ -74,7 +84,7 @@ Generate the balanced training dataset from raw CSV exports. (Find in HF)
 ```
  Output: training/training_dataset_balanced.jsonl (1000+ rows)
  
-##### Phase 2: Fine-Tuning (Local GPU)
+### Phase 2: Fine-Tuning (Local GPU)
 Run the quantized training pipeline.
 
 ```bash
@@ -86,7 +96,7 @@ Epochs: 3.5 (Early stopping based on loss convergence ~0.8)
 
 Output: Generates model.gguf (Q4_K_M quantization).
 
-##### Phase 3: Deployment (CPU)
+### Phase 3: Deployment (CPU)
 Build and run the inference API container.
 
 ```bash
@@ -103,7 +113,8 @@ curl -X POST "http://localhost:7860/analyze" \
 ```
 ---
 
-##### 📊 Performance Metrics
+### 📊 Performance Metrics
+
 | Metric                  | Zero-Shot Baseline | Fine-Tuned (Headless)   |
 | ----------------------- | ------------------ | ----------------------- |
 | Model Size              | 2.5 GB (FP16)      | **768 MB (Q4_K_M)**     |
