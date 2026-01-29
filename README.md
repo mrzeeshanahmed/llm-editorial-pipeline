@@ -15,7 +15,7 @@ This project addresses the challenge of processing **20+ news articles every 5 m
 
 The pipeline decouples reasoning (LLM) from formatting (Application Layer) to maximize throughput.
 
-graph LR
+
 
     A[Raw Articles] -->|Cleaning & Balancing| B(Synthetic Data Engine)
     B -->|Augmented Dataset| C{Unsloth Trainer}
