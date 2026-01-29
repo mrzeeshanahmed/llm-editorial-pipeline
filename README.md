@@ -11,7 +11,7 @@ This project addresses the challenge of processing **20+ news articles every 5 m
 
 ---
 
-## 🏗️ Architecture Overview
+##  🏗️ Architecture Overview
 
 The pipeline decouples reasoning (LLM) from formatting (Application Layer) to maximize throughput.
 
@@ -27,7 +27,7 @@ The pipeline decouples reasoning (LLM) from formatting (Application Layer) to ma
 
 
 ---
-##🚀 Key Engineering Features
+## 🚀 Key Engineering Features
 1. Custom LoRA Fine-Tuning (Memory Optimized)
 Constraint: Training on a consumer GPU (RTX 3050 Ti, 4GB VRAM).
 Solution: Utilized Unsloth for memory-efficient backpropagation and LoRA (Low-Rank Adaptation) with r=8, alpha=16.
@@ -46,7 +46,7 @@ Standard: {"sentiment": 5, "bias": true} (12 tokens)
 Headless: 5 ||| True (3 tokens)
 Benefit: Reduced inference latency by ~35% on CPU and decoupled the database schema from the model weights.
 ---
-##📂 Repository Structure
+## 📂 Repository Structure
 
 
 
@@ -63,7 +63,7 @@ Benefit: Reduced inference latency by ~35% on CPU and decoupled the database sch
 
 ---
 
-##🛠️ Reproduction Steps
+## 🛠️ Reproduction Steps
 
 
   ##### Phase 1: Data Engineering
@@ -74,7 +74,7 @@ Generate the balanced training dataset from raw CSV exports. (Find in HF)
 ```
  Output: training/training_dataset_balanced.jsonl (1000+ rows)
  
-#####Phase 2: Fine-Tuning (Local GPU)
+##### Phase 2: Fine-Tuning (Local GPU)
 Run the quantized training pipeline.
 
 ```bash
@@ -86,7 +86,7 @@ Epochs: 3.5 (Early stopping based on loss convergence ~0.8)
 
 Output: Generates model.gguf (Q4_K_M quantization).
 
-#####Phase 3: Deployment (CPU)
+##### Phase 3: Deployment (CPU)
 Build and run the inference API container.
 
 ```bash
@@ -96,7 +96,6 @@ docker run -p 7860:7860 news-analyzer
 ```
 Test the API:
 
-Bash
 ```bash
 curl -X POST "http://localhost:7860/analyze" \
      -H "Content-Type: application/json" \
@@ -104,7 +103,7 @@ curl -X POST "http://localhost:7860/analyze" \
 ```
 ---
 
-#####📊 Performance Metrics
+##### 📊 Performance Metrics
 | Metric                  | Zero-Shot Baseline | Fine-Tuned (Headless)   |
 | ----------------------- | ------------------ | ----------------------- |
 | Model Size              | 2.5 GB (FP16)      | **768 MB (Q4_K_M)**     |
@@ -113,14 +112,14 @@ curl -X POST "http://localhost:7860/analyze" \
 | Throughput              | 8 articles / 5 min | **22 articles / 5 min** |
 
 ---
-###🧠 Model Weights
+### 🧠 Model Weights
 The final quantized model is hosted on Hugging Face and is licensed under Apache 2.0.
 
 👉 [Download Gemma-3-1B-Editorial-Analyzer](https://huggingface.co/Zap11/gemma-3-1b-editorial-analyzer "Download Gemma-3-1B-Editorial-Analyzer")
 
 ---
 
-###📜 License
+### 📜 License
 This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
 
 
